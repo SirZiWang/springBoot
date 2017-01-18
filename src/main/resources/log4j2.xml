@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status="OFF"，可以去掉，它的含义为是否记录log4j2本身的event信息，默认是OFF -->
+<configuration status="OFF">
+	<!-- 定义下面的引用名 -->
+	<Properties>
+		<property name="log_pattern">%d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n</property>
+		<property name="root_path">/logs/springBoot</property>
+		<property name="every_file_size">1073741824</property> <!-- 日志切割的最小单位 -->
+		<property name="output_log_level">info</property> <!-- 日志输出级别 -->
+	</Properties>
+
+	<!--先定义所有的appender -->
+	<appenders>
+		<!--这个输出控制台的配置 -->
+		<Console name="Console" target="SYSTEM_OUT">
+			<!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+			<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+			<!--这个都知道是输出日志的格式 -->
+			<PatternLayout pattern="${log_pattern}" />
+		</Console>
+
+		<!-- 重要的是，如果有多个ThresholdFilter，那么Filters是必须的，同时在Filters中， 首先要过滤不符合的日志级别，把不需要的首先DENY掉，然后再ACCEPT需要的日志级别，这个次序不能搞颠倒。 -->
+		<!--这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+		<!-- 按月生成归档日志，可以使用 filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz" -->
+		<!-- 显示error级别之外的信息 -->
+		<RollingFile name="RollingFile-error" fileName="${root_path}/error.log"
+			filePattern="${root_path}/ERROR/error-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n" />
+			<SizeBasedTriggeringPolicy size="${every_file_size}" />
+			<Filters>
+				<ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<DefaultRolloverStrategy max="100" />
+		</RollingFile>
+
+		<RollingFile name="RollingFile-warn" fileName="${root_path}/warn.log"
+            filePattern="${root_path}/WARN/warn-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+            <Filters>
+            	<ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+            	<ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY" /> 
+            </Filters>
+            <DefaultRolloverStrategy max="100" />
+        </RollingFile>
+
+		<RollingFile name="RollingFile-info" fileName="${root_path}/info.log"
+			filePattern="${root_path}/INFO/info-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="${log_pattern}" />
+			<SizeBasedTriggeringPolicy size="${every_file_size}" />
+			<Filters>
+				<ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<DefaultRolloverStrategy max="100" />
+		</RollingFile>
+		
+		 <RollingFile name="RollingFile-debug" fileName="${root_path}/debug.log"
+            filePattern="${root_path}/DEBUG/debug-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+            <Filters>
+            	<!-- <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+            	<ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL" /> -->
+            	<ThresholdFilter level="info" onMatch="DENY" onMismatch="NEUTRAL" />
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+              </Filters>
+              <DefaultRolloverStrategy max="100" />
+        </RollingFile>
+        
+        <RollingFile name="RollingFile-trace" fileName="${root_path}/trace.log"
+			filePattern="${root_path}/TRACE/trace-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="${log_pattern}" />
+			<SizeBasedTriggeringPolicy size="${every_file_size}" />
+			<Filters>
+				<ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="info" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="debug" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<DefaultRolloverStrategy max="100" />
+		</RollingFile>
+		
+	</appenders>
+	
+	<!--然后定义logger，只有定义了logger并引入的appender，appender才会生效 -->
+	<loggers>
+ 		<root level="${output_log_level}">
+			<appender-ref ref="RollingFile-error" />
+			<appender-ref ref="RollingFile-warn" />
+			<appender-ref ref="RollingFile-info" />
+			<appender-ref ref="RollingFile-debug" />
+			<appender-ref ref="RollingFile-trace" />
+			<appender-ref ref="Console" />
+		</root>
+	</loggers>
+	
+</configuration>
