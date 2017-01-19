@@ -8,6 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Repository;
 
+import com.wangzi.consumer.ConsumerDemo;
+
 @EnableAutoConfiguration
 @Configuration
 @ComponentScan(basePackages={"com.wangzi.**.**"})
@@ -15,6 +17,15 @@ import org.springframework.stereotype.Repository;
 public class ApplicationStart {
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(ApplicationStart.class, args);
+		String filePath = "/consumer.properties";
+		try {
+			ConsumerDemo consumer = new ConsumerDemo(filePath, 1, 100);
+			Thread thread = new Thread(consumer);
+			thread.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		String[] beanNames = ctx.getBeanNamesForAnnotation(Repository.class);
 		for(String bn:beanNames){
 			System.out.println(bn);
