@@ -1,4 +1,4 @@
-package com.wangzi.producer;
+package com.wangzi.kafka.producer;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -7,7 +7,9 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProducerQueue {
 	
 	private static final Logger logger  = LoggerFactory.getLogger(ProducerQueue.class);

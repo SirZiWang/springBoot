@@ -1,4 +1,4 @@
-package com.wangzi.consumer;
+package com.wangzi.kafka.consumer;
 
 import java.io.FileReader;
 import java.util.HashMap;
