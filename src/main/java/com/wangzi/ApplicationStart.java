@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import com.wangzi.kafka.consumer.ConsumerDemo;
 
-
 @EnableAutoConfiguration
 @Configuration
 @ComponentScan(basePackages={"com.wangzi.**.**"})
