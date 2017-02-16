@@ -1,5 +1,6 @@
 package com.wangzi;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,7 @@ import com.wangzi.kafka.consumer.ConsumerDemo;
 
 @EnableAutoConfiguration
 @Configuration
+@MapperScan("com.wangzi.dao")
 @ComponentScan(basePackages={"com.wangzi.**.**"})
 @SpringBootApplication
 public class ApplicationStart {
