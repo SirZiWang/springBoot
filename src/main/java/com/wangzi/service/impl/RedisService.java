@@ -1,5 +1,6 @@
 package com.wangzi.service.impl;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -12,6 +13,8 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,33 @@ public class RedisService {
 	
 	@Resource(name = "redisTemplate")
 	private ValueOperations<Object, Object> objectRedisOperations;
+	
+	@Resource(name="stringRedisTemplate")
+	private ZSetOperations<String, String> zSetOps;
+	
+	public long addzSet(String key,Set set){
+		return this.zSetOps.add(key, set);
+	}
+	
+	/**
+	 * 
+	 * @param key 
+	 * @param value ==anchorId
+	 * @param delta  增量
+	 */
+	public void updatezSet(String key,String value,int delta, long expireTimeInSeconds){
+		this.zSetOps.incrementScore(key, value, delta);
+		this.stringRedisTemplate.expire(key, expireTimeInSeconds, TimeUnit.SECONDS);
+	}
+	
+	public int getDelta(String key,String value){
+		return this.zSetOps.score(key, value).intValue();
+	}
+	
+	public Set<TypedTuple<String>> rangzSet(String key,long start,long end){
+		Set<TypedTuple<String>> set=zSetOps.reverseRangeWithScores(key, start, end);
+		return set;
+	}
 	
 	/**
 	 * StringRedisTemplate<br>
