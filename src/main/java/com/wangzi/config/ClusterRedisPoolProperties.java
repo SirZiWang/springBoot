@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix="spring.redis.cluster")
+@ConfigurationProperties(prefix="spring.cluster.pool")
 public class ClusterRedisPoolProperties {
 	private int maxIdel;
 	private long maxWaitMillis;
